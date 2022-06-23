@@ -14,6 +14,7 @@ OpenJDK 64-Bit Server VM GraalVM CE 22.1.0 (build 17.0.3+7-jvmci-22.1-b06, mixed
 ```
 
 ---- UPDATE ------
+
 Using just netty and slf4j-simple results in the following error:
 
 ```
