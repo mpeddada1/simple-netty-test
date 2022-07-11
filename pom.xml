@@ -58,11 +58,17 @@
       <artifactId>slf4j-simple</artifactId>
       <version>1.7.36</version>
     </dependency>
-    <!-- gax-grpc version without the initialization at run-time -->
+    <!-- gax-grpc version without the initialization at run-time. Note that added just grpc-netty also results in the same error -->
+<!--    <dependency>-->
+<!--      <groupId>com.google.api</groupId>-->
+<!--      <artifactId>gax-grpc</artifactId>-->
+<!--      <version>2.18.4-SNAPSHOT</version>-->
+<!--    </dependency>-->
+
     <dependency>
-      <groupId>com.google.api</groupId>
-      <artifactId>gax-grpc</artifactId>
-      <version>2.18.4-SNAPSHOT</version>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty-shaded</artifactId>
+      <version>1.47.0</version>
     </dependency>
   </dependencies>
 
@@ -90,7 +96,10 @@
               <buildArgs>
                 <buildArg>--no-fallback</buildArg>
                 <buildArg>--no-server</buildArg>
-                <buildArg>--initialize-at-build-time=org.slf4j.impl.SimpleLogger,org.slf4j.impl.StaticLoggerBinder,org.slf4j.LoggerFactory</buildArg>
+<!--                <buildArg>&#45;&#45;allow-incomplete-classpath</buildArg>-->
+                <buildArg>--initialize-at-build-time=org.slf4j.impl.SimpleLogger,org.slf4j.LoggerFactory,org.slf4j.impl.StaticLoggerBinder</buildArg>
+                <buildArg>--trace-class-initialization=io.grpc.netty.shaded.io.netty.util.internal.logging.Slf4JLoggerFactory</buildArg>
+                <buildArg>--initialize-at-run-time=io.grpc.netty.shaded.io.netty.util.internal.logging.Slf4JLoggerFactory</buildArg>
               </buildArgs>
             </configuration>
           </plugin>
