@@ -50,8 +50,7 @@ Caused by: com.oracle.graal.pointsto.constraints.UnsupportedFeatureException: No
 **Note** The slf4j dependency requires some configurations to be compatible with netty. Specifically `--initialize-at-build-time=org.slf4j.impl.SimpleLogger,org.slf4j.impl.StaticLoggerBinder,org.slf4j.LoggerFactory`. However, adding these configurations results in a conflict with Slf4LoggerFactory:
 
 ```
-Error: Classes that should be initialized at run time got initialized during image building:
- io.grpc.netty.shaded.io.netty.util.internal.logging.Slf4JLoggerFactory the class was requested to be initialized at run time 
+No instances of io.grpc.netty.shaded.io.netty.util.internal.logging.Slf4JLoggerFactory are allowed in the image heap as this class should be initialized at image runtime. To see how this object got instantiated use --trace-object-instantiation=io.grpc.netty.shaded.io.netty.util.internal.logging.Slf4JLoggerFactory.
 ```
 
 ------ Experiment with removing  ----------
