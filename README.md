@@ -13,7 +13,7 @@ OpenJDK Runtime Environment GraalVM CE 22.1.0 (build 17.0.3+7-jvmci-22.1-b06)
 OpenJDK 64-Bit Server VM GraalVM CE 22.1.0 (build 17.0.3+7-jvmci-22.1-b06, mixed mode, sharing)
 ```
 
----- UPDATE ------
+---- Experiment with netty and slf4j-simple ------
 
 Using just netty and slf4j-simple results in the following error:
 
@@ -46,3 +46,18 @@ Caused by: com.oracle.graal.pointsto.constraints.UnsupportedFeatureException: No
 	at com.oracle.svm.hosted.ameta.AnalysisConstantReflectionProvider.interceptValue(AnalysisConstantReflectionProvider.java:188)
 	at com.oracle.svm.hosted.ameta.AnalysisConstantReflectionProvider.readValue(AnalysisConstantReflectionProvider.java:102)
 ```
+
+**Note** The slf4j dependency requires some configurations to be compatible with netty. Specifically `--initialize-at-build-time=org.slf4j.impl.SimpleLogger,org.slf4j.impl.StaticLoggerBinder,org.slf4j.LoggerFactory`. However, adding these configurations results in a conflict with Slf4LoggerFactory:
+
+```
+No instances of io.grpc.netty.shaded.io.netty.util.internal.logging.Slf4JLoggerFactory are allowed in the image heap as this class should be initialized at image runtime. To see how this object got instantiated use --trace-object-instantiation=io.grpc.netty.shaded.io.netty.util.internal.logging.Slf4JLoggerFactory.
+```
+
+------ Experiment with removing  ----------
+
+Using a SNAPSHOT version of gax-grpc which doesn't initialize Slf4jLoggerFactory and Log4JLogger at runtime results in a successful build with some additional slf4j configurations. 
+
+
+SOLUTION: initializing these logging classes at run-time is incompatible when slf4j is present on the classpath, hence, is not a good solution to the resolving the following warning: `Warning: class initialization of class io.grpc.netty.shaded.io.netty.util.internal.logging.Slf4JLoggerFactory failed with exception java.lang.NoClassDefFoundError: Could not initialize class io.grpc.netty.shaded.io.netty.util.internal.logging.Slf4JLoggerFactory. This class will be initialized at run time because option --allow-incomplete-classpath is used for image building. Use the option --initialize-at-run-time=io.grpc.netty.shaded.io.netty.util.internal.logging.Slf4JLoggerFactory to explicitly request delayed initialization of this class.
+`
+
