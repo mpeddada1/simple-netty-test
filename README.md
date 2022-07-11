@@ -13,7 +13,7 @@ OpenJDK Runtime Environment GraalVM CE 22.1.0 (build 17.0.3+7-jvmci-22.1-b06)
 OpenJDK 64-Bit Server VM GraalVM CE 22.1.0 (build 17.0.3+7-jvmci-22.1-b06, mixed mode, sharing)
 ```
 
----- UPDATE ------
+---- Experiment with netty and slf4j-simple ------
 
 Using just netty and slf4j-simple results in the following error:
 
@@ -47,7 +47,15 @@ Caused by: com.oracle.graal.pointsto.constraints.UnsupportedFeatureException: No
 	at com.oracle.svm.hosted.ameta.AnalysisConstantReflectionProvider.readValue(AnalysisConstantReflectionProvider.java:102)
 ```
 
------- UPDATE 2 ------------------
+**Note** The slf4j dependency requires some configurations to be compatible with netty. Specifically `--initialize-at-build-time=org.slf4j.impl.SimpleLogger,org.slf4j.impl.StaticLoggerBinder,org.slf4j.LoggerFactory`. However, adding these configurations results in a conflict with Slf4LoggerFactory:
+
+```
+Error: Classes that should be initialized at run time got initialized during image building:
+ io.grpc.netty.shaded.io.netty.util.internal.logging.Slf4JLoggerFactory the class was requested to be initialized at run time 
+```
+
+------ Experiment with removing  ----------
+
 Using a SNAPSHOT version of gax-grpc which doesn't initialize Slf4jLoggerFactory and Log4JLogger at runtime results in a successful build with some additional slf4j configurations. 
 
 
